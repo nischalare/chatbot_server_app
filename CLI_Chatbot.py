@@ -9,6 +9,7 @@
 import os
 from dotenv import load_dotenv
 
+# Load environment variables
 load_dotenv()
 
 # ------------------ OpenAI ------------------
@@ -17,11 +18,15 @@ openai_client = OpenAI(
     api_key=os.getenv("OPENAI_API_KEY")
 )
 
-# ------------------ Gemini (NEW SDK) ------------------
-from google import genai
-gemini_client = genai.Client(
+# ------------------ Gemini (STABLE SDK) ------------------
+import google.generativeai as genai
+
+genai.configure(
     api_key=os.getenv("GEMINI_API_KEY")
 )
+
+# Use a stable, fast Gemini model
+gemini_model = genai.GenerativeModel("gemini-1.5-flash")
 
 # ------------------ Claude ------------------
 from anthropic import Anthropic
@@ -51,10 +56,7 @@ def get_chatbot_response(user_input, provider="gemini"):
 
         # ---------- Gemini ----------
         elif provider == "gemini":
-            response = gemini_client.models.generate_content(
-                model="gemini-1.5-flash",
-                contents=user_input
-            )
+            response = gemini_model.generate_content(user_input)
             return response.text
 
         # ---------- Claude ----------
