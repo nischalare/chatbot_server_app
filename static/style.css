@@ -1,0 +1,117 @@
+/* ============================================================
+   style.css
+   Project: OpenAI_API_Python
+   Course: Designing Conversational AI
+
+   This file controls the visual appearance (UI styling)
+   of the Flask + HTML chatbot interface.
+
+   CSS is used to:
+   - Improve layout
+   - Enhance readability
+   - Make the chatbot look professional
+   - Provide better user experience
+   ============================================================ */
+
+
+/* ------------------------------------------------------------
+   Page Background Styling
+   ------------------------------------------------------------
+   This styles the entire web page (body tag)
+   ------------------------------------------------------------ */
+body {
+    font-family: Arial, sans-serif;
+    /* Sets a clean, readable font for the whole page */
+
+    background: #f4f6f8;
+    /* Light grey background for a modern look */
+}
+
+
+/* ------------------------------------------------------------
+   Main Chat Container (Card Layout)
+   ------------------------------------------------------------
+   This creates a centered "card" in the middle of the page
+   where the chatbot UI lives
+   ------------------------------------------------------------ */
+.chat-container {
+    width: 500px;
+    /* Fixed width for chatbot card */
+
+    margin: 80px auto;
+    /* Centers the card horizontally and adds top spacing */
+
+    background: white;
+    /* White background for contrast */
+
+    padding: 25px;
+    /* Space inside the card */
+
+    border-radius: 10px;
+    /* Rounded corners for modern UI */
+
+    box-shadow: 0px 4px 15px rgba(0,0,0,0.1);
+    /* Soft shadow for depth (card effect) */
+}
+
+
+/* ------------------------------------------------------------
+   Page Heading
+   ------------------------------------------------------------
+   Styles the main chatbot heading
+   ------------------------------------------------------------ */
+h1 {
+    text-align: center;
+    /* Centers the heading text */
+}
+
+
+/* ------------------------------------------------------------
+   Input Field Styling
+   ------------------------------------------------------------
+   Styles the text box where user types messages
+   ------------------------------------------------------------ */
+input {
+    width: 75%;
+    /* Input field takes 75% of the container width */
+
+    padding: 10px;
+    /* Adds space inside the input box */
+
+    margin-right: 5px;
+    /* Adds spacing between input and button */
+}
+
+
+/* ------------------------------------------------------------
+   Button Styling
+   ------------------------------------------------------------
+   Styles the "Send" button
+   ------------------------------------------------------------ */
+button {
+    padding: 10px 15px;
+    /* Increases clickable area for better UX */
+
+    cursor: pointer;
+    /* Changes mouse pointer to hand icon */
+}
+
+
+/* ------------------------------------------------------------
+   Chatbot Response Box
+   ------------------------------------------------------------
+   Styles the area where chatbot response is displayed
+   ------------------------------------------------------------ */
+.response-box {
+    margin-top: 20px;
+    /* Adds space above the response */
+
+    padding: 15px;
+    /* Space inside the response box */
+
+    background: #e9f5ff;
+    /* Light blue background to distinguish response */
+
+    border-radius: 8px;
+    /* Rounded corners for response box */
+}

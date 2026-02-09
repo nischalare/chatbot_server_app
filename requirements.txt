@@ -1,0 +1,131 @@
+# ============================================================
+# requirements.txt
+# Project: OpenAI_API_Python
+# Course: Designing Conversational AI
+#
+# Purpose:
+# This file lists ALL Python libraries required to run
+# the Conversational AI project with MULTI-LLM support.
+#
+# Installing this file ensures:
+# - Same environment for all students
+# - No "it works on my machine" issues
+# - Easy setup using a single command
+#
+# Usage:
+# pip install -r requirements.txt
+# ============================================================
+
+
+# ------------------------------------------------------------
+# python-dotenv
+# ------------------------------------------------------------
+# Used to load environment variables from the .env file
+#
+# Why needed?
+# - Stores API keys securely
+# - Avoids hardcoding secrets in source code
+# - Industry best practice for configuration management
+#
+# Used in:
+# - CLI_Chatbot.py
+# - Flask
+# - Streamlit
+# ------------------------------------------------------------
+python-dotenv
+
+
+# ------------------------------------------------------------
+# openai
+# ------------------------------------------------------------
+# Official OpenAI Python client library
+#
+# Why needed?
+# - Connects Python code to OpenAI GPT models
+# - Sends prompts and receives AI responses
+#
+# Used when:
+# LLM_PROVIDER=openai
+# ------------------------------------------------------------
+openai
+
+
+# ------------------------------------------------------------
+# google-generativeai
+# ------------------------------------------------------------
+# Official Google Gemini Python SDK
+#
+# Why needed?
+# - Connects Python code to Google Gemini models
+# - Enables free/low-cost LLM usage for students
+#
+# Used when:
+# LLM_PROVIDER=gemini
+# ------------------------------------------------------------
+google-generativeai
+
+
+# ------------------------------------------------------------
+# anthropic
+# ------------------------------------------------------------
+# Official Anthropic Claude Python SDK
+#
+# Why needed?
+# - Connects Python code to Claude models
+# - Demonstrates safety-focused LLMs
+#
+# Used when:
+# LLM_PROVIDER=claude
+# ------------------------------------------------------------
+anthropic
+
+
+# ------------------------------------------------------------
+# flask
+# ------------------------------------------------------------
+# Lightweight Python web framework
+#
+# Why needed?
+# - Creates backend web servers
+# - Serves HTML UI
+# - Exposes REST APIs for React frontend
+#
+# Used in:
+# - Flask_AND_HTML_UI.py
+# - Flask_API_For_React.py
+# ------------------------------------------------------------
+flask
+
+
+# ------------------------------------------------------------
+# flask-cors
+# ------------------------------------------------------------
+# Cross-Origin Resource Sharing support for Flask
+#
+# Why needed?
+# - Allows React frontend (localhost:3000)
+#   to talk to Flask backend (localhost:5000)
+#
+# Without this:
+# - Browser blocks API calls (CORS error)
+#
+# Used in:
+# - Flask_API_For_React.py
+# ------------------------------------------------------------
+flask-cors
+
+
+# ------------------------------------------------------------
+# streamlit
+# ------------------------------------------------------------
+# Python framework for building web UIs quickly
+#
+# Why needed?
+# - Creates browser-based chatbot UI
+# - No HTML/CSS/JS required
+# - Perfect for demos, labs, and workshops
+#
+# Used in:
+# - Streamlit_UI.py
+# ------------------------------------------------------------
+streamlit

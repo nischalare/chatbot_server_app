@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- --------------------------------------------------
+         Page metadata
+    --------------------------------------------------- -->
+
+    <title>OpenAI Multi-LLM Chatbot</title>
+
+    <!-- --------------------------------------------------
+         Link external CSS file
+         Flask loads files from /static folder
+    --------------------------------------------------- -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <!-- --------------------------------------------------
+         Main chat container (styled via CSS)
+    --------------------------------------------------- -->
+    <div class="chat-container">
+
+        <!-- Page heading -->
+        <h1>🤖 OpenAI Multi-LLM Chatbot</h1>
+
+        <!-- --------------------------------------------------
+             Chat Form
+             - Sends data to Flask using POST
+             - Flask route: "/"
+        --------------------------------------------------- -->
+        <form method="POST">
+
+            <!-- ------------------------------
+                 AI Provider Selection Dropdown
+                 This value is sent to Flask as:
+                 request.form["provider"]
+            ------------------------------- -->
+            <select name="provider" required>
+                <option value="gemini">Gemini</option>
+                <option value="openai">OpenAI</option>
+                <option value="claude">Claude</option>
+            </select>
+
+            <!-- ------------------------------
+                 User input text box
+                 Sent to Flask as:
+                 request.form["message"]
+            ------------------------------- -->
+            <input
+                type="text"
+                name="message"
+                placeholder="Type your message..."
+                required
+            />
+
+            <!-- Submit button -->
+            <button type="submit">Send</button>
+
+        </form>
+
+        <!-- --------------------------------------------------
+             Display chatbot response (if available)
+             Jinja condition checks if response exists
+        --------------------------------------------------- -->
+        {% if response %}
+        <div class="response-box">
+            <strong>Chatbot:</strong> {{ response }}
+        </div>
+        {% endif %}
+
+    </div>
+
+</body>
+</html>
