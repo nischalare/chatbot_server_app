@@ -1,77 +1,178 @@
-# ============================================================
-# CLI_Chatbot.py
-# Project: chatbot_server_app
-#
-# SINGLE AI BRAIN – Multi-LLM
-# Supports: OpenAI | Gemini | Claude
-# ============================================================
+# chatbot.py
+# Project Name: OpenAI_API_Python
+# Purpose: Build a safe, multi-turn conversational AI chatbot using OpenAI API
+# Features implemented:
+# 1. Multi-turn conversation memory (context awareness)
+# 2. Token usage display (cost awareness)
+# 3. Safety guardrails (input validation & filtering)
+# 4. Architecture ready for Web UI (Flask / Streamlit / React)
 
-import os
-from dotenv import load_dotenv
+# ---------------------------------------------------
+# Import required libraries
+# ---------------------------------------------------
 
+from openai import OpenAI          # Official OpenAI Python client to call OpenAI APIs
+from dotenv import load_dotenv     # Loads environment variables from .env file
+import os                          # Used to access environment variables
+import time                        # Used for rate limiting (time-based control)
+
+# ---------------------------------------------------
 # Load environment variables
-load_dotenv()
+# ---------------------------------------------------
 
-# ------------------ OpenAI ------------------
-from openai import OpenAI
-openai_client = OpenAI(
-    api_key=os.getenv("OPENAI_API_KEY")
-)
+load_dotenv()  
+# Reads the .env file and loads variables like OPENAI_API_KEY into the environment
 
-# ------------------ Gemini (STABLE SDK) ------------------
-import google.generativeai as genai
+# ---------------------------------------------------
+# Initialize OpenAI client
+# ---------------------------------------------------
 
-genai.configure(
-    api_key=os.getenv("GEMINI_API_KEY")
-)
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+# Creates a client object using the API key stored securely in .env
+# This client is used to send requests to OpenAI models
 
-# Use a stable, fast Gemini model
-gemini_model = genai.GenerativeModel("gemini-1.5-flash")
+# ---------------------------------------------------
+# SAFETY SETTINGS (Guardrails)
+# ---------------------------------------------------
 
-# ------------------ Claude ------------------
-from anthropic import Anthropic
-claude_client = Anthropic(
-    api_key=os.getenv("CLAUDE_API_KEY")
-)
+MAX_INPUT_LENGTH = 300
+# Maximum number of characters allowed in user input
+# Prevents extremely long or abusive prompts
 
+MIN_DELAY_SECONDS = 1
+# Minimum time gap (in seconds) between two API requests
+# Prevents spamming and excessive API usage
 
-def get_chatbot_response(user_input, provider="gemini"):
+last_request_time = 0
+# Stores the timestamp of the last API call
+# Used to enforce rate limiting
+
+BLOCKED_KEYWORDS = ["hate", "kill", "terrorist", "abuse"]
+# List of unsafe or abusive words
+# If user input contains these, the request will be blocked
+
+# ---------------------------------------------------
+# CONVERSATION MEMORY
+# ---------------------------------------------------
+
+messages = [
+    {
+        "role": "system",
+        "content": "You are a helpful, polite, and safe AI assistant."
+    }
+]
+# This list stores the entire conversation history
+# The system message defines chatbot behavior and tone
+# Messages will grow as user and assistant talk
+
+# ---------------------------------------------------
+# CHATBOT FUNCTION
+# ---------------------------------------------------
+
+def get_chatbot_response(user_input):
     """
-    user_input : str
-    provider   : gemini | openai | claude
+    Takes user input, applies safety checks,
+    sends request to OpenAI API,
+    and returns chatbot response
     """
 
-    provider = provider.lower()
+    global last_request_time
+    # Allows us to update the last_request_time variable defined outside the function
+
+    # ---------------- RATE LIMITING ---------------- #
+
+    current_time = time.time()
+    # Gets current system time in seconds
+
+    if current_time - last_request_time < MIN_DELAY_SECONDS:
+        # If user sends messages too fast
+        return "Please wait a moment before sending another message."
+
+    last_request_time = current_time
+    # Update last request time after passing rate limit check
+
+    # ---------------- INPUT LENGTH CHECK ---------------- #
+
+    if len(user_input) > MAX_INPUT_LENGTH:
+        # If input is too long
+        return "Input too long. Please keep your message under 300 characters."
+
+    # ---------------- CONTENT FILTERING ---------------- #
+
+    for word in BLOCKED_KEYWORDS:
+        # Check if any blocked word appears in user input
+        if word in user_input.lower():
+            return "This input violates usage guidelines. Please rephrase."
+
+    # ---------------- ADD USER MESSAGE TO MEMORY ---------------- #
+
+    messages.append({
+        "role": "user",
+        "content": user_input
+    })
+    # Stores the user's message in conversation history
+    # This enables multi-turn context
 
     try:
-        # ---------- OpenAI ----------
-        if provider == "openai":
-            response = openai_client.chat.completions.create(
-                model="gpt-4o-mini",
-                messages=[
-                    {"role": "user", "content": user_input}
-                ]
-            )
-            return response.choices[0].message.content
+        # ---------------- CALL OPENAI API ---------------- #
 
-        # ---------- Gemini ----------
-        elif provider == "gemini":
-            response = gemini_model.generate_content(user_input)
-            return response.text
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",   # Lightweight, cost-efficient model
+            messages=messages,     # Full conversation history
+            temperature=0.7,       # Controls randomness (0 = factual, 1 = creative)
+            max_tokens=300         # Maximum length of the response
+        )
 
-        # ---------- Claude ----------
-        elif provider == "claude":
-            response = claude_client.messages.create(
-                model="claude-3-sonnet-20240229",
-                max_tokens=300,
-                messages=[
-                    {"role": "user", "content": user_input}
-                ]
-            )
-            return response.content[0].text
+        # ---------------- EXTRACT RESPONSE ---------------- #
 
-        else:
-            return "❌ Invalid provider selected"
+        assistant_reply = response.choices[0].message.content
+        # Extracts the actual text reply generated by the AI
+
+        # ---------------- STORE ASSISTANT RESPONSE ---------------- #
+
+        messages.append({
+            "role": "assistant",
+            "content": assistant_reply
+        })
+        # Adds AI response to conversation memory
+        # Enables follow-up questions and context retention
+
+        # ---------------- TOKEN USAGE DISPLAY ---------------- #
+
+        tokens_used = response.usage.total_tokens
+        # Retrieves total tokens used (input + output)
+
+        print(f"[Tokens used: {tokens_used}]")
+        # Prints token usage for cost awareness and teaching purposes
+
+        return assistant_reply
+        # Sends the chatbot reply back to the main program
 
     except Exception as e:
-        return f"❌ Error: {str(e)}"
+        # Handles any API or runtime errors
+        return f"API Error: {e}"
+
+# ---------------------------------------------------
+# MAIN PROGRAM LOOP
+# ---------------------------------------------------
+# ---------------------------------------------------
+# MAIN PROGRAM LOOP (CLI MODE)
+# Runs ONLY when chatbot.py is executed directly
+# ---------------------------------------------------
+
+if __name__ == "__main__":
+
+    print("==============================================")
+    print(" OpenAI Chatbot with Memory & Safety (Python)")
+    print(" Type 'exit' or 'quit' to end the conversation")
+    print("==============================================")
+
+    while True:
+        user_input = input("\nYou: ")
+
+        if user_input.lower() in ["exit", "quit"]:
+            print("Chatbot: Goodbye! 👋")
+            break
+
+        reply = get_chatbot_response(user_input)
+        print(f"Chatbot: {reply}")
